@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import './screens/getting_started.dart';
+import './screens/auth_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,10 +11,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Workout Tracker',
       theme: ThemeData(
+        // brightness: Brightness.light,
         // primarySwatch: Colors.red,
         primaryColor: const Color(0xffEB5050),
+        colorScheme: ColorScheme.light().copyWith(
+          // brightness: Brightness.light,
+          secondary: const Color(0xFF1B90E5),
+        ),
         textTheme: TextTheme(
           bodyLarge:
               GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w600),
@@ -35,6 +42,11 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const GettingStartedScreen(),
+      routes: {
+        // '/': (ctx) => GettingStartedScreen(),
+        // GettingStartedScreen.routeName: (ctx) => GettingStartedScreen(),
+        AuthScreen.routeName: (ctx) => const AuthScreen(),
+      },
     );
   }
 }

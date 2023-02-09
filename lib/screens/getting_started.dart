@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import './auth_screen.dart';
 
 class GettingStartedScreen extends StatelessWidget {
   const GettingStartedScreen({Key key}) : super(key: key);
-
+  static const routeName = '/getting-started-screen';
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -20,7 +21,10 @@ class GettingStartedScreen extends StatelessWidget {
             ),
             SizedBox(height: 0.50 * height),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context)
+                    .pushReplacementNamed(AuthScreen.routeName);
+              },
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30),
