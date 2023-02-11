@@ -11,16 +11,20 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  bool _passVisible = false;
-  bool _confirmPassVisible = false;
-  Map<String, String> _authData = {
+  final Map<String, String> _authData = {
     'name': '',
     'email': '',
     'password': '',
   };
-  final _passwordController =
-      TextEditingController(); // In order to compare password and Confirm Password
+  // In order to compare password and Confirm Password
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   final _authFormKey = GlobalKey<FormState>();
+  bool _passVisible = false;
+  bool _confirmPassVisible = false;
+  bool _signUpModeOn = true;
 
   InputDecoration buildInputDecoration(
       {@required String text, Widget prefixIcon, Widget suffixIcon}) {
@@ -70,27 +74,36 @@ class _AuthScreenState extends State<AuthScreen> {
                 Text('Create an Account',
                     style: Theme.of(context).textTheme.bodyLarge),
                 const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: TextFormField(
-                    decoration: buildInputDecoration(text: 'First Name'),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Name cannot be empty!';
-                      } else if (value.length == 1) {
-                        return 'At least type two characters!';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _authData['name'] = value;
-                    },
+                if (_signUpModeOn)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: TextFormField(
+                      controller: _nameController,
+                      decoration: buildInputDecoration(
+                          text: 'First Name',
+                          prefixIcon: const Icon(Icons.person, size: 20)),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Name cannot be empty!';
+                        } else if (value.length == 1) {
+                          return 'At least type two characters!';
+                        }
+                        return null;
+                      },
+                      textInputAction: TextInputAction.next,
+                      onSaved: (value) {
+                        _authData['name'] = value;
+                      },
+                    ),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: TextFormField(
-                    decoration: buildInputDecoration(text: 'Email'),
+                    controller: _emailController,
+                    decoration: buildInputDecoration(
+                      text: 'Email',
+                      prefixIcon: const Icon(Icons.email, size: 20),
+                    ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value.isEmpty || !value.contains('@')) {
@@ -98,6 +111,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       }
                       return null;
                     },
+                    textInputAction: TextInputAction.next,
                     onSaved: (value) {
                       _authData['email'] = value;
                     },
@@ -106,8 +120,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: TextFormField(
+                    controller: _passwordController,
                     decoration: buildInputDecoration(
                       text: 'Password',
+                      prefixIcon: const Icon(Icons.lock, size: 20),
                       suffixIcon: IconButton(
                         onPressed: () => setState(() {
                           _passVisible = !_passVisible;
@@ -118,7 +134,6 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                     keyboardType: TextInputType.visiblePassword,
-                    controller: _passwordController,
                     obscureText: !_passVisible,
                     validator: (value) {
                       if (value.isEmpty || value.length <= 5) {
@@ -126,37 +141,43 @@ class _AuthScreenState extends State<AuthScreen> {
                       }
                       return null;
                     },
+                    textInputAction: _signUpModeOn
+                        ? TextInputAction.next
+                        : TextInputAction.done,
                     onSaved: (value) {
                       _authData['password'] = value;
                     },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: TextFormField(
-                    decoration: buildInputDecoration(
-                      text: 'Confirm Password',
-                      suffixIcon: IconButton(
-                        onPressed: () => setState(
-                          () {
-                            _confirmPassVisible = !_confirmPassVisible;
-                          },
+                if (_signUpModeOn)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: TextFormField(
+                      decoration: buildInputDecoration(
+                        text: 'Confirm Password',
+                        prefixIcon: const Icon(Icons.lock, size: 20),
+                        suffixIcon: IconButton(
+                          onPressed: () => setState(
+                            () {
+                              _confirmPassVisible = !_confirmPassVisible;
+                            },
+                          ),
+                          icon: _confirmPassVisible
+                              ? const Icon(Icons.visibility_off)
+                              : const Icon(Icons.visibility),
                         ),
-                        icon: _confirmPassVisible
-                            ? const Icon(Icons.visibility_off)
-                            : const Icon(Icons.visibility),
                       ),
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureText: !_confirmPassVisible,
+                      validator: (value) {
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match!';
+                        }
+                        return null;
+                      },
+                      textInputAction: TextInputAction.done,
                     ),
-                    keyboardType: TextInputType.visiblePassword,
-                    obscureText: !_confirmPassVisible,
-                    validator: (value) {
-                      if (value != _passwordController.text) {
-                        return 'Passwords do not match!';
-                      }
-                      return null;
-                    },
                   ),
-                ),
                 const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
@@ -165,7 +186,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10.0, horizontal: 30),
                       child: Text(
-                        'Sign up',
+                        _signUpModeOn ? 'Sign Up' : 'Login',
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium
@@ -181,9 +202,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       vertical: 8,
                     ),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: _changeAuthMode,
                       child: Text(
-                        'Login',
+                        _signUpModeOn ? 'Login' : 'Create a New Account',
                         style: Theme.of(context).textTheme.bodySmall.copyWith(
                               color: Theme.of(context).colorScheme.secondary,
                               fontWeight: FontWeight.w600,
@@ -208,7 +229,19 @@ class _AuthScreenState extends State<AuthScreen> {
     log(_authData['name']);
     log(_authData['email']);
     log(_authData['password']);
+    FocusManager.instance.primaryFocus.unfocus();
   }
 
-  void _changeAuthMode() {}
+  void _changeAuthMode() {
+    _authData['name'] = _nameController.text = '';
+    _authData['email'] = _emailController.text = '';
+    _authData['password'] = _passwordController.text = '';
+
+    if (MediaQuery.of(context).viewInsets.bottom > 0) {
+      FocusManager.instance.primaryFocus.unfocus();
+    }
+    setState(() {
+      _signUpModeOn = !_signUpModeOn;
+    });
+  }
 }
