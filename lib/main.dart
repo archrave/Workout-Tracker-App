@@ -14,11 +14,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Workout Tracker',
       theme: ThemeData(
-        // brightness: Brightness.light,
         // primarySwatch: Colors.red,
         primaryColor: const Color(0xffEB5050),
-        colorScheme: ColorScheme.light().copyWith(
-          // brightness: Brightness.light,
+        colorScheme: const ColorScheme.light().copyWith(
           secondary: const Color(0xFF1B90E5),
         ),
         textTheme: TextTheme(
@@ -26,10 +24,6 @@ class MyApp extends StatelessWidget {
               GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w600),
           bodyMedium: GoogleFonts.poppins(fontSize: 20),
           bodySmall: GoogleFonts.poppins(fontSize: 16),
-        ),
-        buttonTheme: const ButtonThemeData(
-          textTheme: ButtonTextTheme.primary,
-          buttonColor: Color(0xffEB5050),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
